@@ -1,0 +1,85 @@
+{
+  "name": "wordpress",
+  "description": "Configures server running Wordpress",
+  "default_attributes": {
+    "authorization": {
+      "sudo": {
+        "groups": ["sysadmin"],
+        "passwordless": true
+      }
+    },
+    "build_essential": {
+      "compiletime": true
+    },
+    "apache": {
+      "timeout": "60",
+      "keepalivetimeout": "3",
+      "ext_status": true,
+      "prefork": {
+        "startservers": "4",
+        "minspareservers": "4",
+        "maxspareservers": "8",
+        "serverlimit": "128",
+        "maxclients": "48",
+        "maxrequestsperchild": "500"
+      }
+    },
+    "wordpress": {
+      "version": "3.7.1",
+      "source_sql": ""
+    },
+    "php": {
+      "version": "5.3.10-1ubuntu3.9",
+      "ini": {
+        "cookbook": "wordpress"
+      }
+    },
+    "memcached": {
+      "listen": "127.0.0.1",
+      "maxconn": "2048",
+      "udp_port": "",
+      "user": "memcache",
+      "max_object_size": ""
+    },
+    "mysql": {
+      "bind_address": "127.0.0.1",
+      "remove_anonymous_users": "",
+      "remove_test_database": ""
+    },
+    "ntp": {
+      "monitor": true,
+      "apparmor_enabled": true
+    },
+    "postfix": {
+      "main": {
+        "smtp_use_tls": "no",
+        "smtpd_banner": "$myhostname ESMTP $mail_name",
+        "smtp_tls_session_cache_database": "btree:${data_directory}/smtp_scache"
+      }
+    }
+  },
+  "json_class": "Chef::Role",
+  "env_run_lists": {
+  },
+  "run_list": [
+    "recipe[users::sysadmins]",
+    "recipe[sudo]",
+    "recipe[ruby]",
+    "recipe[build-essential]",
+    "recipe[logrotate]",
+    "recipe[ntp]",
+    "recipe[fail2ban]",
+    "recipe[postfix]",
+    "recipe[openssl]",
+    "recipe[wordpress::load_config]",
+    "recipe[memcached]",
+    "recipe[php]",
+    "recipe[database]",
+    "recipe[mysql]",
+    "recipe[apache2]",
+    "recipe[wordpress]"
+  ],
+  "chef_type": "role",
+  "override_attributes": {
+  }
+}
